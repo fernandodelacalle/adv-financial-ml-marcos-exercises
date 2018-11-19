@@ -1,0 +1,60 @@
+import pandas as pd
+import numpy as np
+
+def tick_bar(df, m):
+    return df.iloc[::m]
+
+def volume_bar(df, m):
+    aux = df.reset_index()    
+    idx = []
+    vol_acum = []
+    c_v = 0
+    for i, v in aux.v.items():
+        c_v = c_v + v 
+        if c_v >= m:
+            idx.append(i)
+            vol_acum.append(c_v)
+            c_v = 0
+    volume_bar = aux.loc[idx]
+    volume_bar.loc[idx, 'cum_v'] = vol_acum 
+    volume_bar = volume_bar.set_index('dates')
+    return volume_bar
+
+def dollar_bar(df, m):
+    aux = df.reset_index()    
+    idx = []
+    d_acum = []
+    c_dv = 0
+    for i, dv in aux.dv.items():
+        c_dv = c_dv + dv 
+        if c_dv >= m:
+            idx.append(i)
+            d_acum.append(c_dv)
+            c_dv = 0 
+    dollar_bar = aux.loc[idx]
+    dollar_bar.loc[idx, 'cum_dv'] = d_acum 
+    dollar_bar = dollar_bar.set_index('dates')
+    return dollar_bar
+
+def volume_bar_cum(df, m):
+    aux = df.reset_index()
+    cum_v = aux.v.cumsum()  
+    th = m
+    idx = []
+    for i, c_v in cum_v.items():
+        if c_v >= th:
+            th = th + m
+            idx.append(i)
+    return aux.loc[idx].set_index('dates')
+
+def dollar_bar_cum(df, m):
+    aux = df.reset_index()
+    cum_dv = aux.dv.cumsum()  
+    th = m
+    idx = []
+    for i, c_dv in cum_dv.items():
+        if c_dv >= th:
+            th = th + m
+            idx.append(i)
+    return aux.loc[idx].set_index('dates')
+
